@@ -2,7 +2,11 @@
   "language": "de",
   "brand": "Im Zweifel Goethe",
   "handle": "@im.zweifel.goethe",
-  "label": "SATIRE · NEWS DES TAGES",
+  "wordmark": [
+    "IM ZWEIFEL",
+    "GOETHE."
+  ],
+  "label": "SATIRE / ERFUNDENES ZITAT",
   "publish_repo": "realbeardedman/witz-bot-de",
   "posting_mode": "test",
   "slots": {

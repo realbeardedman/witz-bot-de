@@ -119,6 +119,39 @@ class BotTests(unittest.TestCase):
         L = bot.layout(c)
         self.assertLessEqual(L["punch_y"] + L["punch"].height, bot.MAIN_BOTTOM)
 
+    def test_duplicate_quote_and_recent_speaker_are_rejected(self):
+        history = [{"setup": "„Bitte ziehen Sie eine Nummer und warten Sie.“", "punchline": "– Noah, auf der Arche"}]
+        self.assertIn("Zitat", bot.duplicate({"setup": "Bitte ziehen Sie eine Nummer, und warten Sie!", "punchline": "Kafka"}, history))
+        self.assertIn("noah", bot.duplicate({"setup": "Neuer Satz", "punchline": "Noah, beim Packen"}, history))
+        self.assertIsNone(bot.duplicate({"setup": "Neuer Satz", "punchline": "Sisyphos"}, history))
+
+    def test_failed_reservation_posts_nothing(self):
+        def failing_git(*args):
+            raise bot.subprocess.CalledProcessError(1, "git")
+        uploads = []
+        with mock.patch.object(bot, "git", failing_git), \
+             mock.patch.object(bot, "publish_reel", lambda *a: uploads.append(a) or "m1"):
+            with self.assertRaises(SystemExit) as cm:
+                bot.reserve({"date": "2026-12-01-0617", "headline": "h"})
+        self.assertIn("Nichts gepostet", str(cm.exception))
+        self.assertEqual(uploads, [])
+
+    def test_reservation_then_publish_marks_entry(self):
+        store = []
+        with mock.patch.object(bot, "load_state", lambda: [dict(e) for e in store]), \
+             mock.patch.object(bot, "save_json", lambda path, data: store.__setitem__(slice(None), data)), \
+             mock.patch.object(bot, "git", lambda *a: None):
+            i = bot.reserve({"date": "2026-12-01-0617", "headline": "h", "setup": "s", "punchline": "p"})
+            self.assertEqual(store[i]["status"], "reserved")
+            bot.record(i, "media42")
+        self.assertEqual(store[i]["status"], "published")
+        self.assertEqual(store[i]["media_id"], "media42")
+
+    def test_instagram_errors_are_shortened(self):
+        msg = bot.ig_error(R(400, {"error": {"code": 190, "error_subcode": 463, "message": "x" * 500}}))
+        self.assertIn("Code 190/463", msg)
+        self.assertLess(len(msg), 220)
+
 
 if __name__ == "__main__":
     unittest.main()

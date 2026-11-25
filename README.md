@@ -6,19 +6,23 @@ zu einer echten, aktuellen Nachricht, als Reel. Eigenständige Kopie des englisc
 
 ## Ablauf eines Laufs
 
-1. **Zeitfenster prüfen** (`schedule_plan.py`): 07:17 oder 19:17 Uhr Berliner Zeit, ganzjährig
-   (je Fenster zwei UTC-Crons für Sommer- und Winterzeit). Im Modus `test` wechseln Morgen und Abend
-   täglich; höchstens ein Beitrag pro Berliner Kalendertag.
+1. **Zeitfenster prüfen** (`schedule_plan.py`): 07:17 oder 19:17 Uhr Berliner Zeit (Crons mit
+   `timezone: Europe/Berlin`, von GitHub seit März 2026 unterstützt). Im Modus `test` wechseln Morgen und
+   Abend täglich; höchstens ein Beitrag (auch ein reservierter) pro Berliner Kalendertag.
 2. **Schlagzeilen** aus Google News Deutschland (`hl=de`, `gl=DE`), höchstens 48 Stunden alt,
    Themen rotieren (Wirtschaft, Arbeit, Bürokratie, Technik & KI, Konsum, Sport & Kultur, Kurioses).
    Unglücke, Gewalt, Krankheit u. Ä. werden per Sperrliste aussortiert, bereits behandelte Links übersprungen.
 3. **Autor** (Gemini, Ausweich: Cloudflare): sechs Varianten, Zitat ≤ 22 Wörter, Urheber ≤ 8 Wörter.
 4. **Schlussredaktion** (zweiter, unabhängiger Aufruf): Sicherheits- und Nachrichtenbezugsprüfung,
    Note nach fester Skala. Veröffentlicht wird nur ab 8/10, sonst kein Beitrag. Bis zu sieben Themen pro Lauf.
+   Danach harte Dublettenprüfung: kein Zitat zweimal, kein Urheber zweimal innerhalb von 30 Beiträgen.
 5. **Reel** (1080 × 1920, H.264, stille Tonspur): Hook → Zitat mit „Wer hat's gesagt?“ → Urheber als Pointe
-   → „Schick das …“. Schlagzeile und Quelle stehen oben, „SATIRE“ im Kopf, Satirehinweis in der Caption.
+   → „Schick das …“. Wortlogo „IM ZWEIFEL / GOETHE.“ mit „SATIRE / ERFUNDENES ZITAT“, Schlagzeile und Quelle
+   oben, Satirehinweis in der Caption (die Caption verrät die Pointe nicht).
 6. **Veröffentlichung** über die Instagram-API (Meta Unified Login, direkter Video-Upload).
-   Vorher: Prüfung von Repository und tatsächlichem Instagram-Konto.
+   Vorher: Prüfung von Repository und tatsächlichem Instagram-Konto, dann **Reservierung** des Beitrags im
+   Verlauf (wird vor dem Upload gepusht; scheitert der Push, wird nichts gepostet). Bleibt ein Eintrag mit
+   `"status": "reserved"` stehen, zuerst im Instagram-Konto nachsehen; es gibt keinen automatischen zweiten Versuch.
 
 ## Regeln für Urheber
 
@@ -29,8 +33,8 @@ Symbolfiguren von Diktatur, Völkermord oder Terror, Figuren aus geschützten mo
 
 ## Einrichtung (Kontoinhaber)
 
-1. **Meta:** Instagram-Konto @im.zweifel.goethe (professionelles Konto) im bestehenden Business-Portfolio
-   hinzufügen und dem Systemnutzer zuweisen (volle Kontrolle). Token mit `instagram_basic`,
+1. **Meta:** Instagram-Konto @im.zweifel.goethe (professionelles Konto) im Business-Portfolio „Deadpan Desk“
+   hinzufügen und dem Systemnutzer `deadpan-bot` zuweisen (volle Kontrolle). Token mit `instagram_basic`,
    `instagram_content_publish` (und ggf. `business_management`), Ablauf „Nie“.
 2. **Secrets** (Settings → Secrets and variables → Actions → Secrets):
    `GEMINI_API_KEY`, `CF_ACCOUNT_ID`, `CF_API_TOKEN`, `IG_ACCESS_TOKEN`, später `IG_USER_ID`.
@@ -66,7 +70,7 @@ Automatische Insights-Auswertung ist nicht eingebaut. GitHub startet geplante L�
 
 | Feld | Wirkung |
 |---|---|
-| `handle`, `label` | Handle und Kopfzeile im Reel |
+| `handle`, `wordmark`, `label` | Handle, Wortlogo und Satirekennzeichnung im Reel |
 | `topics`, `formats` | Themenfelder, Suchbegriffe, Hashtags, Zitat-Formate |
 | `design` | Farben (Tintenblau, Papier, Gold, Siegelrot) |
 | `min_score` | Mindestnote der Schlussredaktion (8) |
@@ -75,7 +79,7 @@ Automatische Insights-Auswertung ist nicht eingebaut. GitHub startet geplante L�
 
 ## Tests
 
-`python -m unittest discover -s tests -v` (14 Tests, ohne echte API-Aufrufe; laufen auch in jedem Workflow).
+`python -m unittest discover -s tests -v` (19 Tests, ohne echte API-Aufrufe; laufen auch in jedem Workflow).
 
 ## Fehlerbehebung
 
@@ -88,3 +92,10 @@ Automatische Insights-Auswertung ist nicht eingebaut. GitHub startet geplante L�
 | `Heute kein Witz, der die Prüfung besteht` | kein Fehler: Qualität geht vor täglicher Veröffentlichung |
 
 Schriften: Inter (SIL Open Font License, siehe `fonts/LICENSE-Inter.txt`).
+
+## Übernommen aus dem ChatGPT-Entwurf (v1.1)
+
+Wortlogo, Reservierung vor dem Upload, harte Dublettenprüfung, Hinweis „Schlagzeilen sind Daten“ in den
+Prompts, gekürzte Instagram-Fehlermeldungen, Crons mit Zeitzone. Nicht übernommen: Caption mit Zitat und
+Urheber in der ersten Zeile (verrät die Pointe), eigenes Politik-Thema (Reichweitenbremse bei Instagram),
+statisches Zwei-Bild-Video ohne Hook und Aufruf zum Weiterschicken.

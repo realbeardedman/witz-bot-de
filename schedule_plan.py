@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Entscheidet bei geplanten Läufen, ob jetzt gepostet wird.
 
-GitHub-Cron läuft in UTC. Damit 07:17 und 19:17 Uhr Berliner Zeit ganzjährig stimmen,
-gibt es je Zeitfenster zwei Crons (Sommer- und Winterzeit). Dieses Skript lässt nur den
-passenden durch, wählt im Modus "test" täglich abwechselnd Morgen oder Abend und
-verhindert mehr als einen Beitrag pro Berliner Kalendertag.
+Die Crons im Workflow stehen mit "timezone: Europe/Berlin" (von GitHub seit März 2026 unterstützt),
+die Stunde im Cron ist also bereits Berliner Zeit. Dieses Skript ordnet den Cron einem Zeitfenster zu,
+wählt im Modus "test" täglich abwechselnd Morgen oder Abend und verhindert mehr als einen Beitrag
+(auch einen reservierten) pro Berliner Kalendertag.
 
 Aufruf im Workflow:  python schedule_plan.py   -> schreibt run=true|false nach $GITHUB_OUTPUT
 Nur Standardbibliothek, damit der Schritt vor der Installation laufen kann.
@@ -24,13 +24,11 @@ def load(name, default):
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
 
 
-def scheduled_slot(schedule, now, slots):
-    """Ordnet einen Cron-Ausdruck ('17 6 * * *') dem Berliner Zeitfenster zu, das er heute trifft."""
-    minute, hour = (int(x) for x in schedule.split()[:2])
-    planned = now.astimezone(dt.timezone.utc).replace(hour=hour, minute=minute, second=0, microsecond=0)
-    local_hour = planned.astimezone(BERLIN).hour
+def scheduled_slot(schedule, slots):
+    """Ordnet einen Cron-Ausdruck in Berliner Zeit ('17 7 * * *') einem Zeitfenster zu."""
+    hour = int(schedule.split()[1])
     for name, slot_hour in slots.items():
-        if local_hour == slot_hour:
+        if hour == slot_hour:
             return name
     return None
 
@@ -55,9 +53,9 @@ def decide(schedule, now, cfg, state):
     if not schedule:
         return True, "manuell gestartet"
     day = now.astimezone(BERLIN).date()
-    slot = scheduled_slot(schedule, now, cfg.get("slots", {"morning": 7, "evening": 19}))
+    slot = scheduled_slot(schedule, cfg.get("slots", {"morning": 7, "evening": 19}))
     if slot is None:
-        return False, f"Cron '{schedule}' gehört heute nicht zu einem Zeitfenster (Sommer-/Winterzeit)"
+        return False, f"Cron '{schedule}' gehört zu keinem Zeitfenster"
     wanted = wanted_slot(day, cfg.get("posting_mode", "test"))
     if slot != wanted:
         return False, f"heute ist das Zeitfenster '{wanted}' dran, nicht '{slot}'"

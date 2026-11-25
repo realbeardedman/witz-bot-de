@@ -2,12 +2,12 @@ name: Im Zweifel Goethe
 
 on:
   schedule:
-    # GitHub-Cron läuft in UTC. Je Zeitfenster zwei Crons (Winter-/Sommerzeit);
-    # schedule_plan.py lässt nur den zur Berliner Uhrzeit passenden durch.
-    - cron: "17 5 * * *"    # 07:17 Uhr Berlin im Sommer
-    - cron: "17 6 * * *"    # 07:17 Uhr Berlin im Winter
-    - cron: "17 17 * * *"   # 19:17 Uhr Berlin im Sommer
-    - cron: "17 18 * * *"   # 19:17 Uhr Berlin im Winter
+    # GitHub unterstützt seit März 2026 eine Zeitzone je Cron; Sommer-/Winterzeit übernimmt GitHub.
+    # schedule_plan.py entscheidet, welches der beiden Fenster heute dran ist.
+    - cron: "17 7 * * *"    # 07:17 Uhr Berlin
+      timezone: Europe/Berlin
+    - cron: "17 19 * * *"   # 19:17 Uhr Berlin
+      timezone: Europe/Berlin
   workflow_dispatch:
     inputs:
       modus:

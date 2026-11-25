@@ -11,14 +11,15 @@ CFG = {"slots": {"morning": 7, "evening": 19}, "posting_mode": "test"}
 
 
 class ScheduleTests(unittest.TestCase):
-    def test_winter_and_summer_crons(self):
-        winter = dt.datetime(2026, 12, 10, 6, 20, tzinfo=UTC)
-        summer = dt.datetime(2027, 7, 10, 5, 20, tzinfo=UTC)
-        self.assertEqual(sp.scheduled_slot("17 6 * * *", winter, CFG["slots"]), "morning")
-        self.assertIsNone(sp.scheduled_slot("17 5 * * *", winter, CFG["slots"]))
-        self.assertEqual(sp.scheduled_slot("17 5 * * *", summer, CFG["slots"]), "morning")
-        self.assertEqual(sp.scheduled_slot("17 18 * * *", winter, CFG["slots"]), "evening")
-        self.assertEqual(sp.scheduled_slot("17 17 * * *", summer, CFG["slots"]), "evening")
+    def test_crons_map_to_slots(self):
+        self.assertEqual(sp.scheduled_slot("17 7 * * *", CFG["slots"]), "morning")
+        self.assertEqual(sp.scheduled_slot("17 19 * * *", CFG["slots"]), "evening")
+        self.assertIsNone(sp.scheduled_slot("17 12 * * *", CFG["slots"]))
+
+    def test_reserved_entry_blocks_the_day(self):
+        now = dt.datetime(2026, 12, 10, 18, 20, tzinfo=UTC)
+        state = [{"status": "reserved", "posted": "2026-12-10T06:20+00:00"}]
+        self.assertFalse(sp.decide("17 19 * * *", now, dict(CFG, posting_mode="evening"), state)[0])
 
     def test_test_mode_alternates_and_each_weekday_gets_both_slots(self):
         start = dt.date(2026, 11, 30)
@@ -33,10 +34,10 @@ class ScheduleTests(unittest.TestCase):
         now = dt.datetime(2026, 12, 10, 18, 20, tzinfo=UTC)
         day = now.date()
         cfg = dict(CFG, posting_mode="evening")
-        ok, _ = sp.decide("17 18 * * *", now, cfg, [])
+        ok, _ = sp.decide("17 19 * * *", now, cfg, [])
         self.assertTrue(ok)
         state = [{"posted": "2026-12-10T06:20+00:00"}]
-        ok, reason = sp.decide("17 18 * * *", now, cfg, state)
+        ok, reason = sp.decide("17 19 * * *", now, cfg, state)
         self.assertFalse(ok, reason)
         self.assertTrue(sp.posted_on(state, day))
 
