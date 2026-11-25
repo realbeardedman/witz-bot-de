@@ -1,0 +1,113 @@
+name: Im Zweifel Goethe
+
+on:
+  schedule:
+    # GitHub-Cron läuft in UTC. Je Zeitfenster zwei Crons (Winter-/Sommerzeit);
+    # schedule_plan.py lässt nur den zur Berliner Uhrzeit passenden durch.
+    - cron: "17 5 * * *"    # 07:17 Uhr Berlin im Sommer
+    - cron: "17 6 * * *"    # 07:17 Uhr Berlin im Winter
+    - cron: "17 17 * * *"   # 19:17 Uhr Berlin im Sommer
+    - cron: "17 18 * * *"   # 19:17 Uhr Berlin im Winter
+  workflow_dispatch:
+    inputs:
+      modus:
+        description: "Was soll passieren?"
+        type: choice
+        default: testlauf
+        options:
+          - testlauf               # 1 Reel erzeugen und zum Download bereitstellen, NICHT posten
+          - posten                 # 1 Reel erzeugen und veröffentlichen
+          - startpaket             # mehrere Reels in queue/ ablegen (zur Durchsicht, NICHT posten)
+          - warteschlange_posten   # alle Reels aus queue/ veröffentlichen
+          - wochenrueckblick_test  # Wochen-Karussell rendern, NICHT posten
+          - wochenrueckblick       # Wochen-Karussell veröffentlichen
+          - verbindung_pruefen     # Instagram-Zugang testen und IG_USER_ID anzeigen
+      anzahl:
+        description: "Anzahl Reels im Startpaket"
+        default: "3"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: goethe
+  cancel-in-progress: false
+
+env:
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+  CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+  IG_USER_ID: ${{ secrets.IG_USER_ID }}
+  IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+  IG_EXPECTED_USERNAME: ${{ vars.IG_EXPECTED_USERNAME }}
+  SCHEDULE: ${{ github.event.schedule }}
+  MODUS: ${{ github.event_name == 'schedule' && 'posten' || inputs.modus }}
+
+jobs:
+  run:
+    # Geplante Läufe nur, wenn die Repository-Variable AUTO_PUBLISH auf "true" steht.
+    if: github.event_name != 'schedule' || vars.AUTO_PUBLISH == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Zeitfenster prüfen
+        id: gate
+        run: python schedule_plan.py
+
+      - name: Abhängigkeiten installieren
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          pip install -r requirements.txt
+          command -v ffmpeg || (sudo apt-get update -q && sudo apt-get install -y -q ffmpeg)
+          git config user.name "goethe-bot"
+          git config user.email "goethe-bot@users.noreply.github.com"
+
+      - name: Tests
+        if: steps.gate.outputs.run == 'true'
+        run: python -m unittest discover -s tests -v
+
+      - name: Verbindung prüfen
+        if: steps.gate.outputs.run == 'true' && env.MODUS == 'verbindung_pruefen'
+        run: python bot.py check
+
+      - name: Tages-Reel
+        if: steps.gate.outputs.run == 'true' && (env.MODUS == 'testlauf' || env.MODUS == 'posten')
+        run: |
+          python bot.py prepare
+          if [ "$MODUS" = "posten" ]; then python bot.py publish; fi
+
+      - name: Startpaket erzeugen
+        if: steps.gate.outputs.run == 'true' && env.MODUS == 'startpaket'
+        run: python bot.py startpaket "${{ inputs.anzahl || '3' }}"
+
+      - name: Warteschlange veröffentlichen
+        if: steps.gate.outputs.run == 'true' && env.MODUS == 'warteschlange_posten'
+        run: python bot.py queue
+
+      - name: Wochen-Karussell
+        if: steps.gate.outputs.run == 'true' && (env.MODUS == 'wochenrueckblick' || env.MODUS == 'wochenrueckblick_test')
+        run: |
+          if [ "$MODUS" = "wochenrueckblick" ]; then python bot.py weekly; else python bot.py weekly --dry; fi
+
+      - name: Ergebnis zum Download bereitstellen
+        if: always() && (hashFiles('out/**') != '' || hashFiles('queue/**') != '')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ergebnis-${{ env.MODUS }}-${{ github.run_number }}
+          path: |
+            out/
+            queue/
+          retention-days: 14
+
+      - name: Änderungen sichern
+        if: always() && steps.gate.outputs.run == 'true' && env.MODUS != 'testlauf' && env.MODUS != 'wochenrueckblick_test' && env.MODUS != 'verbindung_pruefen'
+        run: |
+          git add -A
+          git diff --cached --quiet || git commit -m "Im Zweifel Goethe: ${MODUS} $(date -u +%F)"
+          git pull --rebase -q && git push

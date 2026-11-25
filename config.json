@@ -1,0 +1,185 @@
+{
+  "language": "de",
+  "brand": "Im Zweifel Goethe",
+  "handle": "@im.zweifel.goethe",
+  "label": "SATIRE · NEWS DES TAGES",
+  "publish_repo": "realbeardedman/witz-bot-de",
+  "posting_mode": "test",
+  "slots": {
+    "morning": 7,
+    "evening": 19
+  },
+  "feed": {
+    "hl": "de",
+    "gl": "DE",
+    "ceid": "DE:de"
+  },
+  "topics": [
+    {
+      "name": "Wirtschaft & Geld",
+      "query": "Wirtschaft OR Inflation OR Preise OR Steuern OR Rente OR Börse",
+      "hashtags": [
+        "#wirtschaft",
+        "#geld"
+      ]
+    },
+    {
+      "name": "Arbeit & Büro",
+      "query": "Arbeit OR Homeoffice OR Gehalt OR Chef OR Fachkräfte OR Viertagewoche",
+      "hashtags": [
+        "#arbeit",
+        "#büro"
+      ]
+    },
+    {
+      "name": "Bürokratie & Verwaltung",
+      "query": "Bürokratie OR Behörde OR Formular OR Digitalisierung Verwaltung OR Deutsche Bahn OR Bahn Verspätung",
+      "hashtags": [
+        "#bürokratie",
+        "#deutschland"
+      ]
+    },
+    {
+      "name": "Technik & KI",
+      "query": "Künstliche Intelligenz OR ChatGPT OR Smartphone OR Roboter OR App OR Datenschutz",
+      "hashtags": [
+        "#ki",
+        "#technik"
+      ]
+    },
+    {
+      "name": "Konsum & Alltag",
+      "query": "Black Friday OR Supermarkt OR Shopping OR Mieten OR Urlaub OR Lieferdienst",
+      "hashtags": [
+        "#alltag",
+        "#konsum"
+      ]
+    },
+    {
+      "name": "Sport & Kultur",
+      "query": "Bundesliga OR Fußball OR Kino OR Theater OR Buch OR Museum",
+      "hashtags": [
+        "#sport",
+        "#kultur"
+      ]
+    },
+    {
+      "name": "Kurioses",
+      "query": "kurios OR skurril OR Studie OR Rekord OR ungewöhnlich",
+      "hashtags": [
+        "#kurios",
+        "#lustig"
+      ]
+    }
+  ],
+  "formats": [
+    {
+      "name": "Zeitreisender",
+      "instruction": "Ein moderner Satz, der zur Schlagzeile passt (Behördendeutsch, Kundenservice-Floskel, App-Hinweis, Konzernsprech, Werbeslogan), einer historischen Person in den Mund gelegt, als hätte sie ihn in ihrer Zeit gesagt."
+    },
+    {
+      "name": "Märchen & Mythen",
+      "instruction": "Ein moderner Satz zur Schlagzeile, einer Figur aus Märchen, Sagen, griechischer Mythologie, Bibel oder klassischer Literatur (gemeinfrei) zugeschrieben, deren bekannte Geschichte die Pointe trägt."
+    },
+    {
+      "name": "Verdrehter Klassiker",
+      "instruction": "Ein berühmtes Zitat oder Sprichwort, leicht abgewandelt, damit es zur Schlagzeile passt, dem falschen, aber erkennbar passenden historischen oder mythischen Urheber zugeschrieben."
+    }
+  ],
+  "always_hashtags": [
+    "#imzweifelgoethe",
+    "#satire",
+    "#zitate"
+  ],
+  "weekly_hashtags": [
+    "#imzweifelgoethe",
+    "#satire",
+    "#zitate",
+    "#wochenrückblick",
+    "#humor"
+  ],
+  "disclosure": "",
+  "max_article_age_hours": 48,
+  "min_score": 8,
+  "blocklist": [
+    "tot",
+    "tote",
+    "toter",
+    "toten",
+    "tod",
+    "todes",
+    "stirbt",
+    "starb",
+    "gestorben",
+    "getötet",
+    "mord",
+    "ermordet",
+    "anschlag",
+    "terror",
+    "krieg",
+    "amok",
+    "leiche",
+    "opfer",
+    "unfall",
+    "unglück",
+    "katastrophe",
+    "verletzt",
+    "absturz",
+    "erdbeben",
+    "flut",
+    "vergewaltigung",
+    "missbrauch",
+    "suizid",
+    "krebs",
+    "krankheit",
+    "entführung",
+    "geisel",
+    "schießerei",
+    "attentat",
+    "festgenommen",
+    "angeklagt",
+    "flüchtlinge",
+    "migration",
+    "abschiebung",
+    "religion",
+    "islam",
+    "juden",
+    "kirche",
+    "großbrand",
+    "brandanschlag",
+    "brandstift",
+    "strafprozess",
+    "gerichtsprozess",
+    "mordfall"
+  ],
+  "gemini_models": [
+    "gemini-3.8-flash",
+    "gemini-flash-latest",
+    "gemini-3.6-flash"
+  ],
+  "text_model": "@cf/openai/gpt-oss-120b",
+  "fallback_text_model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+  "design": {
+    "background": "#13213C",
+    "text": "#F6F1E7",
+    "muted": "#A8B3C7",
+    "headline_box": "#F6F1E7",
+    "headline_text": "#13213C",
+    "punchline_box": "#E9C46A",
+    "punchline_text": "#13213C",
+    "accent": "#E76F51"
+  },
+  "quote_style": true,
+  "timing": {
+    "hook_seconds": 2.2,
+    "words_per_second": 3.0,
+    "min_setup_seconds": 2.5,
+    "min_punchline_seconds": 2.8,
+    "cta_seconds": 2.0
+  },
+  "audio_name": "Im Zweifel Goethe",
+  "music_volume": 0.35,
+  "upload_mode": "resumable",
+  "graph_host": "graph.facebook.com",
+  "graph_api_version": "v25.0"
+}
