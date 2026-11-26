@@ -153,5 +153,16 @@ class BotTests(unittest.TestCase):
         self.assertLess(len(msg), 220)
 
 
+class SendTargetTests(unittest.TestCase):
+    def test_double_prefix_removed(self):
+        self.assertEqual(bot.send_target("Schick das jemandem, der nur noch Pakete öffnet."),
+                         "jemandem, der nur noch Pakete öffnet")
+
+    def test_bad_start_falls_back(self):
+        self.assertEqual(bot.send_target("Schick das an den Lichtsuchenden", "deiner Kollegin mit drei Abos"),
+                         "deiner Kollegin mit drei Abos")
+        self.assertEqual(bot.send_target("an den Lichtsuchenden"), bot.T_["default_send"])
+
+
 if __name__ == "__main__":
     unittest.main()

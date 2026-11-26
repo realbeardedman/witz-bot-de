@@ -691,6 +691,18 @@ def seen_and_recent(state):
     return seen, recent
 
 
+def send_target(*options):
+    """Teilen-Aufruf säubern: doppeltes "Schick das" entfernen, nur erlaubte Anfänge zulassen."""
+    starts = ("jemandem", "deinem", "deiner", "deinen", "allen", "someone", "your", "anyone")
+    for raw in options:
+        t = clean(raw or "").rstrip(".!")
+        t = re.sub(r"^(?:schick(?:e)?\s+(?:das|dies)|send\s+this\s+to)[\s:,]*", "", t, flags=re.I).strip()
+        t = lower_first(t)
+        if t and t.split()[0].lower().strip(",") in starts and len(t.split()) <= 10:
+            return t
+    return T_["default_send"]
+
+
 def norm(text):
     """Vergleichsform: Unicode normalisiert, Kleinbuchstaben, nur Wörter."""
     return " ".join(re.findall(r"\w+", unicodedata.normalize("NFKC", str(text or "")).casefold()))
@@ -741,7 +753,7 @@ def build_joke(topic, fmt, seen, recent):
         "hook": clean(f["hook"]),
         "setup": quoted(clean(f["setup"])),
         "punchline": f"{'–' if LANG == 'de' else '—'} {clean(f['punchline']).lstrip('—–- ')}",
-        "send_to": lower_first(clean(f.get("send_to") or d.get("send_to") or T_["default_send"]).rstrip(".")),
+        "send_to": send_target(f.get("send_to"), d.get("send_to")),
         "comment_question": clean(d.get("comment_question") or T_["default_question"]),
         "teaser": clean(d.get("teaser") or f["hook"]),
         "score": f.get("score"),
