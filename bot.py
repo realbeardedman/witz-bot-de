@@ -271,11 +271,12 @@ Du bekommst ein Format und nummerierte Schlagzeilen. Wähle die Schlagzeile mit 
 
 So funktioniert es: Man liest zuerst das Zitat, fragt sich, wer das gesagt haben soll, und sieht dann den Urheber. Der falsche Urheber ist die Pointe, keine nachgeschobene Erklärung. Das Zitat passt zur Schlagzeile; erst der Urheber macht es komisch, weil seine bekannte Geschichte, sein Werk oder seine Epoche einen neuen Sinn hineinlegt.
 
-Ton: trocken, absurd, intelligent, knapp, gelegentlich gesellschaftskritisch. Keine Kalauer, keine Standard-Memes, keine erzwungenen Wortspiele. Gute Beispiele für die Richtung (nicht wiederverwenden):
+Ton: bissig, trocken, intelligent, gern böse. Die Satire tritt nach oben, nie nach unten: Sie spießt Konzerne, Behörden, Regierungshandeln, Lobbys, Marketing-Sprech, Heuchelei und Absurditäten auf. Ein gutes Zitat hat einen Stachel: Nach dem Lachen bleibt ein "autsch, stimmt ja". Harmlose Beobachtungen ("Shoppen macht arm") sind zu schwach. Am stärksten ist ein Urheber mit Fallhöhe, dessen Geschichte die Schlagzeile entlarvt: ein Tyrann, ein Betrüger, ein Teufel, ein Gescheiterter. Keine Kalauer, keine Standard-Memes, keine erzwungenen Wortspiele. Beispiele für die Richtung (nicht wiederverwenden):
+- "Monatlich kündbar. Steht alles im Kleingedruckten." – Mephisto
+- "Wir erhöhen nicht die Preise, wir passen nur die Packung an." – Prokrustes
+- "Wir sind auf einem guten Weg." – Moses, im 40. Jahr
+- "Sollen sie doch Kuchen essen. Jetzt 20 % reduziert." – Marie Antoinette
 - "Bitte akzeptieren Sie alle Cookies." – Die Hexe aus Hänsel und Gretel
-- "Ich möchte meine Daten nicht mit Dritten teilen." – Moses, mit zwei Steintafeln
-- "Wir haben ein Problem mit der Work-Life-Balance." – Sisyphos
-- "Das ist ein rein logistisches Problem." – Noah
 
 Regeln für den Urheber (streng):
 - Erlaubt: historische Personen, die seit mindestens 50 Jahren tot sind; Figuren aus Märchen, Sagen, Mythologie, Bibel und gemeinfreier klassischer Literatur. Goethe selbst darf ab und zu der Urheber sein, das ist der Markenkern.
@@ -287,7 +288,7 @@ Regeln für das Zitat:
 - Das Zitat greift ein konkretes Detail der Schlagzeile auf (eine Zahl, eine Behauptung, eine Floskel). Passt es zu jeder beliebigen Schlagzeile, ist es nicht gut genug.
 - Fakten nur aus der Schlagzeile; Übertreibung muss offensichtlich sein.
 
-Tabu: Witze über Opfer, Tod, Gewalt, Krieg, Krankheit, Unglücke; Witze auf Kosten von Gruppen (Herkunft, Religion, Geschlecht, Sexualität, Behinderung, Aussehen, Alter); Parteipolitik. Sachliche Satire über Bürokratie und Verwaltung ist erlaubt. Redewendungen sind erlaubt.
+Tabu: Witze über Opfer, Tod, Gewalt, Krieg, Krankheit, Unglücke; Witze auf Kosten von Gruppen (Herkunft, Religion, Geschlecht, Sexualität, Behinderung, Aussehen, Alter); Parteipolitik (keine Parteien und keine lebenden Politiker nennen oder angreifen). Erlaubt und erwünscht: scharfe Satire über Entscheidungen von Regierung, Behörden, Konzernen und Institutionen als solche. Redewendungen sind erlaubt.
 
 Liefere:
 - 6 Varianten im vorgegebenen Format, jede mit einem anderen Urheber: "quote" (ohne Anführungszeichen), "speaker" (ohne Gedankenstrich), "real_source" ("neu", "abgewandelt" oder die echte Quelle).
@@ -303,13 +304,13 @@ Antworte ausschließlich mit JSON:
 {"choice": <Nummer der Schlagzeile oder 0>, "quotes": [{"quote": "...", "speaker": "...", "real_source": "..."}, ...], "hooks": ["...", "...", "...", "...", "..."], "send_to": "...", "comment_question": "...", "teaser": "..."}"""
 
 EDITOR_DE = """Du bist die Schlussredaktion des Satirekanals "Im Zweifel Goethe" (täglich ein falsch zugeschriebenes Zitat zu einer echten Schlagzeile). Prüfe unabhängig und streng.
-1. Sicherheit: Verwirf jede Variante, deren Urheber lebt, eine Privatperson ist, vor weniger als 50 Jahren gestorben ist, für Diktatur, Völkermord oder Terror steht, oder aus einem geschützten modernen Werk stammt; die Opfer, Tod, Gewalt, Krieg, Krankheit oder Unglücke betrifft; die Gruppen herabsetzt; die parteipolitisch austeilt; oder die Songtexte, Gedichte oder Sätze aus geschützten Werken verwendet. Redewendungen sind erlaubt.
+1. Sicherheit: Verwirf jede Variante, deren Urheber lebt, eine Privatperson ist, vor weniger als 50 Jahren gestorben ist, für Diktatur, Völkermord oder Terror steht, oder aus einem geschützten modernen Werk stammt; die Opfer, Tod, Gewalt, Krieg, Krankheit oder Unglücke betrifft; die Gruppen herabsetzt; die Parteien oder lebende Politiker nennt oder angreift; oder die Songtexte, Gedichte oder Sätze aus geschützten Werken verwendet. Redewendungen sind erlaubt.
 2. Nachrichtenbezug: Verwirf jede Variante, die nicht an einem konkreten Detail der Schlagzeile hängt.
 3. Bewerte jede verbleibende Variante von 1 bis 10, und sei geizig:
-   - 9–10: Der Urheber gibt dem Zitat sofort und zwingend einen neuen Sinn; man lacht laut.
-   - 8: Man würde es tatsächlich weiterschicken.
-   - 6–7: clever, aber flach.
-   - 5 oder weniger: Kalauer, Standard-Meme, erzwungenes Wortspiel, Urheber zu unbekannt, oder die Pointe wird erklärt statt gezeigt.
+   - 9–10: Der Urheber gibt dem Zitat sofort und zwingend einen neuen Sinn, und es hat Biss; man lacht laut und denkt "autsch".
+   - 8: Bissig und treffend; man würde es tatsächlich weiterschicken.
+   - 6–7: clever, aber harmlos oder flach. Jede Variante ohne Stachel bekommt höchstens 7.
+   - 5 oder weniger: Kalauer, Standard-Meme, erzwungenes Wortspiel, Urheber zu unbekannt, Spott nach unten, oder die Pointe wird erklärt statt gezeigt.
    Wähle die Variante mit der höchsten Punktzahl.
 4. Wähle den stärksten Hook, der den Urheber nicht verrät.
 5. Kürze und schärfe: Zitat höchstens 22 Wörter (ohne Anführungszeichen), Urheber höchstens 8 Wörter (ohne Gedankenstrich), Hook höchstens 8 Wörter, "send_to" höchstens 9 Wörter. Keine Emojis, keine Hashtags.
